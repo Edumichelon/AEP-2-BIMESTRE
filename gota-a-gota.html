@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gota a Gota</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --deep:    #073b5f;
+      --ocean:   #0a5a8a;
+      --sky:     #38bdf8;
+      --teal:    #06b6a4;
+      --warn:    #f59e0b;
+      --danger:  #ef4444;
+      --ok:      #22c55e;
+      --bg:      #f0f8ff;
+      --surface: #ffffff;
+      --text:    #1e293b;
+      --muted:   #64748b;
+      --border:  #e2f0fb;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, var(--deep) 0%, var(--ocean) 60%, #0c6e93 100%);
+      padding: 60px 24px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--sky);
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 14px;
+    }
+    .hero h1 span { color: var(--sky); }
+    .hero p {
+      font-size: 1rem;
+      color: #a8d8f0;
+      max-width: 420px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+
+    /* wave */
+    .wave-wrap { line-height: 0; }
+    .wave-wrap svg { display: block; width: 100%; }
+
+    /* ── LAYOUT ── */
+    .main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 16px rgba(10,90,138,.06);
+    }
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--deep);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title .icon {
+      width: 30px; height: 30px;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+
+    /* ── INPUTS GRID ── */
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .field input, .field select {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .2s;
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--sky); background: #fff; }
+
+    /* ── BTN ── */
+    .btn-calc {
+      width: 100%;
+      margin-top: 24px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--ocean), var(--teal));
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: transform .15s, box-shadow .15s;
+      box-shadow: 0 4px 18px rgba(10,90,138,.3);
+    }
+    .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(10,90,138,.4); }
+    .btn-calc:active { transform: translateY(0); }
+
+    /* ── RESULTADO ── */
+    .result-hidden { display: none; }
+
+    .score-ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .ring-svg { width: 130px; height: 130px; flex-shrink: 0; }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 10; }
+    .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round;
+      stroke-dasharray: 339.3; stroke-dashoffset: 339.3;
+      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1), stroke .5s; }
+    .ring-label { text-anchor: middle; dominant-baseline: middle; }
+    .ring-number { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; fill: var(--deep); }
+    .ring-unit   { font-family: 'Inter', sans-serif; font-size: 11px; fill: var(--muted); }
+
+    .score-details { flex: 1; min-width: 200px; }
+    .score-status {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .score-sub { font-size: .88rem; color: var(--muted); line-height: 1.55; }
+
+    /* breakdown bars */
+    .breakdown { display: flex; flex-direction: column; gap: 10px; }
+    .bkd-row { display: flex; flex-direction: column; gap: 4px; }
+    .bkd-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; font-weight: 500; color: var(--muted);
+    }
+    .bkd-label span:last-child { color: var(--deep); font-weight: 600; }
+    .bkd-bar { height: 8px; background: var(--border); border-radius: 20px; overflow: hidden; }
+    .bkd-fill { height: 100%; border-radius: 20px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+
+    /* metrics row */
+    .metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-top: 22px; }
+    .metric {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .metric-val { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--deep); }
+    .metric-lbl { font-size: 11.5px; color: var(--muted); font-weight: 500; }
+
+    /* dica */
+    .dica-box {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: linear-gradient(135deg, #e8f8fc, #e0fdf6);
+      border-left: 4px solid var(--teal);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 20px;
+      font-size: .9rem;
+      line-height: 1.55;
+      color: var(--deep);
+    }
+    .dica-box .dica-icon { font-size: 1.3rem; margin-top: 1px; flex-shrink: 0; }
+
+    /* ── HISTÓRICO ── */
+    .hist-list { display: flex; flex-direction: column; gap: 8px; }
+    .hist-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px;
+      background: var(--bg);
+      border-radius: 10px;
+      font-size: 13.5px;
+    }
+    .hist-item .hist-date { color: var(--muted); }
+    .hist-item .hist-val { font-weight: 700; font-family: 'Syne', sans-serif; color: var(--deep); }
+    .hist-badge {
+      font-size: 11px; font-weight: 600; padding: 2px 9px;
+      border-radius: 20px; margin-left: 8px;
+    }
+    .hist-empty { color: var(--muted); font-size: .9rem; text-align: center; padding: 16px 0; }
+
+    /* ── SAIBA MAIS ── */
+    .btn-saiba {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--ocean);
+      font-family: 'Syne', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background .2s, border-color .2s;
+    }
+    .btn-saiba:hover { background: #e7f4fc; border-color: var(--sky); }
+
+    .saiba-section { display: none; }
+    .saiba-section h3 {
+      font-family: 'Syne', sans-serif;
+      color: var(--ocean);
+      margin: 20px 0 6px;
+    }
+    .formula {
+      background: var(--bg);
+      border-left: 3px solid var(--sky);
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      font-weight: 600;
+      font-size: .9rem;
+      margin: 8px 0;
+    }
+    .saiba-section p, .saiba-section li { font-size: .9rem; line-height: 1.65; color: var(--muted); }
+    .saiba-section ul { list-style: none; padding: 0; }
+    .saiba-section li { padding: 7px 0; border-bottom: 1px solid var(--border); }
+    .saiba-section a { color: var(--ocean); font-weight: 500; }
+
+    /* ── FOOTER ── */
+    .footer { text-align: center; font-size: 12px; color: var(--muted); padding-bottom: 32px; }
+    .footer a { color: var(--muted); }
+
+    @media (max-width: 540px) {
+      .score-ring-wrap { flex-direction: column; gap: 16px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <p class="hero-eyebrow">Calculadora de Consumo Hídrico</p>
+  <h1>Gota a<br><span>Gota</span></h1>
+  <p>Monitore seu uso de água, descubra onde está gastando mais e veja quanto pode economizar.</p>
+  <div class="wave-wrap">
+    <svg viewBox="0 0 1200 64" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,32 C200,64 400,0 600,32 C800,64 1000,0 1200,32 L1200,64 L0,64 Z" fill="#f0f8ff"/>
+    </svg>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- CALCULADORA -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🚿</div>Atividades do dia</div>
+    <div class="inputs-grid">
+
+      <div class="field">
+        <label>🚿 Tempo de banho (min)</label>
+        <input type="number" id="banho" min="0" placeholder="Ex: 10">
+      </div>
+
+      <div class="field">
+        <label>🍽️ Lavagens de louça</label>
+        <input type="number" id="louca" min="0" placeholder="Ex: 2">
+      </div>
+
+      <div class="field">
+        <label>🚽 Descargas usadas</label>
+        <input type="number" id="descarga" min="0" placeholder="Ex: 5">
+      </div>
+
+      <div class="field">
+        <label>🌿 Rega de plantas (L)</label>
+        <input type="number" id="rega" min="0" placeholder="Ex: 0">
+      </div>
+
+      <div class="field">
+        <label>👐 Lavagens de mão</label>
+        <input type="number" id="maos" min="0" placeholder="Ex: 6">
+      </div>
+
+      <div class="field">
+        <label>🚗 Lavagem de carro?</label>
+        <select id="carro">
+          <option value="nao">Não</option>
+          <option value="sim">Sim (mangueira ~200L)</option>
+          <option value="balde">Sim (balde ~40L)</option>
+        </select>
+      </div>
+
+    </div>
+    <button class="btn-calc" onclick="calcularConsumo()">💧 Calcular meu consumo</button>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="card result-hidden" id="resultadoCard">
+    <div class="card-title"><div class="icon">📊</div>Resultado</div>
+
+    <div class="score-ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="54"/>
+        <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="54"
+          transform="rotate(-90 60 60)"/>
+        <text x="60" y="56" class="ring-label ring-number" id="ringNum">0</text>
+        <text x="60" y="71" class="ring-label ring-unit">litros/dia</text>
+      </svg>
+      <div class="score-details">
+        <div class="score-status" id="scoreStatus">—</div>
+        <div class="score-sub" id="scoreSub"></div>
+      </div>
+    </div>
+
+    <!-- breakdown -->
+    <div class="breakdown" id="breakdown"></div>
+
+    <!-- métricas extras -->
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-val" id="mPorcento">—</div>
+        <div class="metric-lbl">% da média nacional (150L)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mCusto">—</div>
+        <div class="metric-lbl">Custo estimado/mês</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mAnual">—</div>
+        <div class="metric-lbl">Consumo estimado/ano</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val" id="mEconomia">—</div>
+        <div class="metric-lbl">Pode economizar/mês</div>
+      </div>
+    </div>
+
+    <div class="dica-box" id="dicaBox">
+      <div class="dica-icon">💡</div>
+      <div id="dicaTexto"></div>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="card">
+    <div class="card-title"><div class="icon">🕒</div>Histórico</div>
+    <div class="hist-list" id="historico">
+      <div class="hist-empty">Nenhum cálculo realizado ainda.</div>
+    </div>
+  </div>
+
+  <!-- SAIBA MAIS -->
+  <button class="btn-saiba" onclick="toggleSaibaMais()" id="btnSaiba">▾ Saiba Mais — Como calculamos?</button>
+
+  <div class="card saiba-section" id="saibaMais">
+    <div class="card-title"><div class="icon">📚</div>Metodologia de cálculo</div>
+
+    <p>O sistema utiliza valores médios de consumo baseados em referências técnicas sobre uso residencial de água no Brasil.</p>
+
+    <h3>🚿 Banho</h3>
+    <p>Chuveiro elétrico médio consome aproximadamente <strong>9 litros por minuto</strong>.</p>
+    <div class="formula">Banho = Minutos × 9L</div>
+
+    <h3>🍽️ Louça</h3>
+    <p>Torneira aberta durante a lavagem consome cerca de <strong>20 litros por sessão</strong>.</p>
+    <div class="formula">Louça = Lavagens × 20L</div>
+
+    <h3>🚽 Descarga</h3>
+    <p>Uma descarga convencional utiliza em média <strong>6 litros</strong> (caixa acoplada moderna).</p>
+    <div class="formula">Descarga = Usos × 6L</div>
+
+    <h3>🌿 Rega</h3>
+    <p>Valor informado diretamente pelo usuário em litros.</p>
+
+    <h3>👐 Lavagem de mãos</h3>
+    <p>Com torneira aberta o tempo todo: cerca de <strong>2 litros por lavagem</strong>.</p>
+    <div class="formula">Mãos = Lavagens × 2L</div>
+
+    <h3>🚗 Carro</h3>
+    <p>Mangueira: ~200L. Balde: ~40L.</p>
+
+    <h3>📊 Média recomendada</h3>
+    <ul>
+      <li>✅ Até 150L → Consumo consciente</li>
+      <li>⚠️ 151–250L → Atenção ao desperdício</li>
+      <li>🚨 Acima de 250L → Consumo elevado</li>
+    </ul>
+
+    <h3>💰 Estimativa de custo</h3>
+    <p>Baseada na tarifa média residencial da SANEPAR/SABESP: <strong>R$ 0,022 por litro</strong> (R$ 22,00/m³). Valor aproximado para fins educacionais.</p>
+
+    <h3>📚 Fontes</h3>
+    <ul>
+      <li>💧 <a href="https://www.saaeambientalsantafe.sp.gov.br/meio-ambiente/dicas-de-economia" target="_blank">SAAE — Dicas de economia de água</a></li>
+      <li>📊 <a href="https://www.sabesp.com.br/site/uploads/file/asabesp_doctos/consumo_agua_faleconosco.pdf" target="_blank">Sabesp — Perfil do consumo residencial</a></li>
+      <li>🌎 <a href="https://www.un.org/en/global-issues/water" target="_blank">ONU — Recursos hídricos globais</a></li>
+      <li>🚰 <a href="https://www.gov.br/dnocs/pt-br/assuntos/noticias/consumo-consciente-da-agua-e-base-para-um-futuro-sustentavel" target="_blank">Gov.br — Consumo consciente da água</a></li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Gota a Gota · Projeto acadêmico · ODS 11 — Cidades e Comunidades Sustentáveis</p>
+</footer>
+
+<script>
+// ── MODELO OO ──────────────────────────────────────────────
+class ConsumoAgua {
+  constructor({ banho, louca, descarga, rega, maos, carro }) {
+    this.banho    = banho;
+    this.louca    = louca;
+    this.descarga = descarga;
+    this.rega     = rega;
+    this.maos     = maos;
+    this.carro    = carro; // 'nao' | 'sim' | 'balde'
+  }
+  calcularBanho()    { return this.banho    * 9;  }
+  calcularLouca()    { return this.louca    * 20; }
+  calcularDescarga() { return this.descarga * 6;  }
+  calcularRega()     { return this.rega;           }
+  calcularMaos()     { return this.maos     * 2;  }
+  calcularCarro()    {
+    if (this.carro === 'sim')   return 200;
+    if (this.carro === 'balde') return 40;
+    return 0;
+  }
+  calcularTotal() {
+    return (
+      this.calcularBanho()    +
+      this.calcularLouca()    +
+      this.calcularDescarga() +
+      this.calcularRega()     +
+      this.calcularMaos()     +
+      this.calcularCarro()
+    );
+  }
+  partes() {
+    return [
+      { label: '🚿 Banho',         valor: this.calcularBanho(),    cor: '#38bdf8' },
+      { label: '🍽️ Louça',         valor: this.calcularLouca(),    cor: '#818cf8' },
+      { label: '🚽 Descarga',      valor: this.calcularDescarga(), cor: '#a78bfa' },
+      { label: '🌿 Rega',          valor: this.calcularRega(),     cor: '#34d399' },
+      { label: '👐 Lavagem de mãos',valor: this.calcularMaos(),    cor: '#60a5fa' },
+      { label: '🚗 Carro',         valor: this.calcularCarro(),    cor: '#fb923c' },
+    ].filter(p => p.valor > 0);
+  }
+}
+
+// ── HISTÓRICO ─────────────────────────────────────────────
+let historico = [];
+
+// ── CALCULAR ──────────────────────────────────────────────
+function v(id) { return Number(document.getElementById(id).value) || 0; }
+
+function calcularConsumo() {
+  const consumo = new ConsumoAgua({
+    banho:    v('banho'),
+    louca:    v('louca'),
+    descarga: v('descarga'),
+    rega:     v('rega'),
+    maos:     v('maos'),
+    carro:    document.getElementById('carro').value,
+  });
+
+  const total = consumo.calcularTotal();
+
+  mostrarResultado(consumo, total);
+  salvarHistorico(total);
+
+  document.getElementById('resultadoCard')
+    .classList.remove('result-hidden');
+  document.getElementById('resultadoCard')
+    .scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── RESULTADO ─────────────────────────────────────────────
+function mostrarResultado(consumo, total) {
+  // Ring
+  const CIRCUNF = 339.3; // 2π × 54
+  const MAX_RING = 350;
+  const pct = Math.min(total / MAX_RING, 1);
+  const offset = CIRCUNF - pct * CIRCUNF;
+  const ring    = document.getElementById('ringFill');
+  const ringNum = document.getElementById('ringNum');
+  ring.style.strokeDashoffset = offset;
+
+  let cor;
+  if      (total <= 150)  cor = '#22c55e';
+  else if (total <= 250)  cor = '#f59e0b';
+  else                    cor = '#ef4444';
+  ring.style.stroke = cor;
+
+  setTimeout(() => { ringNum.textContent = total; }, 50);
+
+  // Status
+  const statusEl = document.getElementById('scoreStatus');
+  const subEl    = document.getElementById('scoreSub');
+  if (total <= 150) {
+    statusEl.textContent  = '✅ Consumo consciente';
+    statusEl.style.color  = '#16a34a';
+    subEl.textContent     = 'Você está dentro da média recomendada de 150L/dia. Continue assim!';
+  } else if (total <= 250) {
+    statusEl.textContent  = '⚠️ Consumo moderado';
+    statusEl.style.color  = '#d97706';
+    subEl.textContent     = `Você está ${total - 150}L acima da média recomendada. Pequenas mudanças fazem grande diferença.`;
+  } else {
+    statusEl.textContent  = '🚨 Consumo elevado';
+    statusEl.style.color  = '#dc2626';
+    subEl.textContent     = `Você consome ${total - 150}L a mais do que a média recomendada por dia. Veja as dicas abaixo.`;
+  }
+
+  // Breakdown
+  const bk = document.getElementById('breakdown');
+  bk.innerHTML = '';
+  consumo.partes().forEach(p => {
+    const pctBar = total > 0 ? Math.min((p.valor / total) * 100, 100) : 0;
+    bk.innerHTML += `
+      <div class="bkd-row">
+        <div class="bkd-label">
+          <span>${p.label}</span>
+          <span>${p.valor} L (${Math.round(pctBar)}%)</span>
+        </div>
+        <div class="bkd-bar">
+          <div class="bkd-fill" style="width:0%;background:${p.cor}"
+            data-w="${pctBar.toFixed(1)}"></div>
+        </div>
+      </div>`;
+  });
+  // animate bars after paint
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.bkd-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }));
+
+  // Métricas
+  const MEDIA     = 150;
+  const TARIFA    = 0.022; // R$/L
+  const porcento  = Math.round((total / MEDIA) * 100);
+  const custoMes  = (total * 30 * TARIFA).toFixed(2).replace('.', ',');
+  const anualKL   = ((total * 365) / 1000).toFixed(1);
+  const podeEcon  = total > MEDIA
+    ? `${(Math.round((total - MEDIA) * 0.4 * 30 * TARIFA * 100) / 100).toFixed(2).replace('.', ',')} /mês`
+    : 'Já está ótimo!';
+
+  document.getElementById('mPorcento').textContent  = porcento + '%';
+  document.getElementById('mCusto').textContent     = 'R$ ' + custoMes;
+  document.getElementById('mAnual').textContent     = anualKL + ' m³';
+  document.getElementById('mEconomia').textContent  = total > MEDIA ? 'R$ ' + podeEcon : podeEcon;
+
+  // Dica
+  const dicaTexto = document.getElementById('dicaTexto');
+  const partes    = consumo.partes().sort((a, b) => b.valor - a.valor);
+  const maior     = partes[0];
+  if (!maior) {
+    dicaTexto.innerHTML = '🌱 Preencha as atividades para receber uma dica personalizada.';
+  } else if (maior.label.includes('Banho')) {
+    dicaTexto.innerHTML = `<strong>Seu maior gasto é o banho (${maior.valor}L).</strong> Reduzir 5 minutos por dia economiza até <strong>1.350L por mês</strong>. Experimente cronometrar usando uma playlist curta.`;
+  } else if (maior.label.includes('Descarga')) {
+    dicaTexto.innerHTML = `<strong>Descargas respondem por ${maior.valor}L do seu dia.</strong> Considere instalar uma caixa acoplada de duplo acionamento — economiza até 40% por uso.`;
+  } else if (maior.label.includes('Carro')) {
+    dicaTexto.innerHTML = `<strong>Lavar o carro com mangueira usa ~200L.</strong> Trocar para balde reduz para ~40L — uma economia de 80% nessa atividade.`;
+  } else if (maior.label.includes('Louça')) {
+    dicaTexto.innerHTML = `<strong>Lavagem de louça é seu principal gasto (${maior.valor}L).</strong> Ensaboar com a torneira fechada e abrir só para enxaguar pode reduzir o consumo em até 50%.`;
+  } else {
+    dicaTexto.innerHTML = total <= 150
+      ? '<strong>Parabéns!</strong> Seu consumo está dentro da média recomendada. Continue com esses bons hábitos! 🌱'
+      : `<strong>Dica:</strong> Pequenas mudanças diárias — torneira fechada ao escovar os dentes, ducha mais curta — podem reduzir seu consumo em mais de 20%.`;
+  }
+}
+
+// ── HISTÓRICO ─────────────────────────────────────────────
+function salvarHistorico(total) {
+  historico.push({ data: new Date().toLocaleString('pt-BR'), consumo: total });
+  renderHistorico();
+}
+
+function renderHistorico() {
+  const el = document.getElementById('historico');
+  if (!historico.length) {
+    el.innerHTML = '<div class="hist-empty">Nenhum cálculo realizado ainda.</div>';
+    return;
+  }
+  el.innerHTML = [...historico].reverse().map(r => {
+    let badge, bc;
+    if      (r.consumo <= 150) { badge = '✅ Consciente'; bc = 'background:#dcfce7;color:#16a34a'; }
+    else if (r.consumo <= 250) { badge = '⚠️ Moderado';   bc = 'background:#fef9c3;color:#a16207'; }
+    else                       { badge = '🚨 Elevado';    bc = 'background:#fee2e2;color:#b91c1c'; }
+    return `
+      <div class="hist-item">
+        <span class="hist-date">${r.data}</span>
+        <span>
+          <span class="hist-val">${r.consumo} L</span>
+          <span class="hist-badge" style="${bc}">${badge}</span>
+        </span>
+      </div>`;
+  }).join('');
+}
+
+// ── SAIBA MAIS ────────────────────────────────────────────
+function toggleSaibaMais() {
+  const s   = document.getElementById('saibaMais');
+  const btn = document.getElementById('btnSaiba');
+  const open = s.style.display === 'block';
+  s.style.display = open ? 'none' : 'block';
+  btn.textContent = open
+    ? '▾ Saiba Mais — Como calculamos?'
+    : '▴ Fechar metodologia';
+}
+</script>
+</body>
+</html>

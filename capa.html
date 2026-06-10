@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gota a Gota — Água é Vida</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --deep:   #073b5f;
+      --ocean:  #0a5a8a;
+      --sky:    #38bdf8;
+      --teal:   #06b6a4;
+      --bg:     #f0f8ff;
+      --text:   #1e293b;
+      --muted:  #64748b;
+      --border: #e2f0fb;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: var(--text);
+    }
+
+    /* ── HERO FOTO ── */
+    .hero-img {
+      position: relative;
+      height: 100vh;
+      min-height: 560px;
+      overflow: hidden;
+    }
+    .hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+      display: block;
+    }
+    /* overlay gradiente escurece suavemente a parte inferior */
+    .hero-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(4,28,50,.18) 0%,
+        rgba(4,28,50,.10) 40%,
+        rgba(4,28,50,.70) 80%,
+        rgba(4,28,50,.90) 100%
+      );
+    }
+
+    .hero-badge {
+      position: absolute;
+      top: 32px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 100px;
+      padding: 7px 18px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .hero-badge span { color: var(--sky); }
+
+    .hero-copy {
+      position: absolute;
+      bottom: 60px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      text-align: center;
+      width: 90%;
+      max-width: 680px;
+    }
+    .hero-copy h1 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(2.6rem, 7vw, 5rem);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.05;
+      margin-bottom: 16px;
+    }
+    .hero-copy h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: #a8e6ff;
+    }
+    .hero-copy p {
+      font-size: clamp(.95rem, 2vw, 1.1rem);
+      color: rgba(255,255,255,.78);
+      line-height: 1.65;
+    }
+
+    /* scroll hint */
+    .scroll-hint {
+      position: absolute;
+      bottom: 18px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.5);
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      animation: bob 2s ease-in-out infinite;
+    }
+    .scroll-hint svg { opacity: .5; }
+    @keyframes bob {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── CONTEÚDO ── */
+    .content {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 72px 24px 80px;
+    }
+
+    /* lede */
+    .lede {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(1.25rem, 3vw, 1.6rem);
+      font-weight: 700;
+      color: var(--deep);
+      line-height: 1.4;
+      margin-bottom: 40px;
+      border-left: 4px solid var(--sky);
+      padding-left: 20px;
+    }
+
+    /* stats strip */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+    .stat {
+      background: var(--bg);
+      padding: 22px 18px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--ocean);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 500; line-height: 1.4; }
+
+    /* body text */
+    .body-text p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #334155;
+      margin-bottom: 22px;
+    }
+    .body-text p:last-child { margin-bottom: 0; }
+    .body-text strong { color: var(--deep); }
+
+    /* divisor */
+    .divider {
+      display: flex; align-items: center; gap: 16px;
+      margin: 44px 0;
+      color: var(--border);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .divider-icon { font-size: 1.4rem; }
+
+    /* bloco de destaque */
+    .highlight {
+      background: linear-gradient(135deg, #e8f8fc 0%, #e0fdf6 100%);
+      border-radius: 16px;
+      padding: 28px 28px 28px 24px;
+      border-left: 4px solid var(--teal);
+      margin-bottom: 40px;
+    }
+    .highlight p {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--deep);
+      margin-bottom: 0;
+    }
+    .highlight strong { color: #065f46; }
+
+    /* lista */
+    .fact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 40px;
+    }
+    .fact-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: .975rem;
+      line-height: 1.65;
+      color: #334155;
+    }
+    .fact-list li .ico {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      margin-top: 1px;
+    }
+
+    /* ods badge */
+    .ods-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 52px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .ods-badge strong { color: var(--deep); font-size: 14px; }
+    .ods-dot {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: #0a7c4a;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.1;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* ── CTA ── */
+    .cta-wrap {
+      text-align: center;
+      padding: 0 0 12px;
+    }
+    .cta-wrap p {
+      font-size: .9rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .btn-cta {
+      display: inline-block;
+      padding: 18px 40px;
+      background: linear-gradient(135deg, var(--ocean), var(--teal));
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 14px;
+      text-decoration: none;
+      letter-spacing: .03em;
+      box-shadow: 0 6px 24px rgba(10,90,138,.32);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .btn-cta:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(10,90,138,.4); }
+    .btn-cta:active { transform: translateY(0); }
+    .btn-arrow { margin-left: 8px; font-size: 1.1em; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 480px) {
+      .stats { grid-template-columns: 1fr; }
+      .hero-copy h1 { font-size: 2.2rem; }
+      .hero-copy { bottom: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<section class="hero-img">
+  <img
+    src="img/img gota.png"
+    alt="Gota de água cristalina formando ondas em superfície azul"
+    loading="eager"
+  >
+
+  <div class="hero-badge">
+    💧 <span>Gota a Gota</span> · ODS 11 — Cidades Sustentáveis
+  </div>
+
+  <div class="hero-copy">
+    <h1>Cada gota<br><em>importa</em></h1>
+    <p>A água cobre 71% do planeta, mas menos de 3% é doce<br>e acessível para toda a humanidade.</p>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    role abaixo
+  </div>
+</section>
+
+<!-- ── CONTEÚDO ── -->
+<article class="content" id="conteudo">
+
+  <p class="lede">
+    A água é a base de toda vida na Terra — e nunca esteve tão ameaçada quanto agora.
+  </p>
+
+  <!-- stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">2,2 bi</div>
+      <div class="stat-lbl">pessoas sem acesso a água potável segura no mundo</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">30%</div>
+      <div class="stat-lbl">da água tratada no Brasil é desperdiçada nas redes</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">2050</div>
+      <div class="stat-lbl">ano em que metade do planeta pode sofrer escassez hídrica</div>
+    </div>
+  </div>
+
+  <div class="body-text">
+    <p>
+      Imagine acordar e não ter água para beber, cozinhar ou tomar banho. Para
+      <strong>2,2 bilhões de pessoas no mundo</strong>, isso não é um exercício de imaginação
+      — é a realidade de todo dia. Enquanto isso, em países com abundância hídrica como o
+      Brasil, o desperdício diário por pessoa chega a ser o dobro do que é considerado
+      suficiente para uma vida digna.
+    </p>
+    <p>
+      O problema não está apenas na seca ou no clima. Está nos nossos hábitos. Um banho
+      de 15 minutos consome até 135 litros. Uma torneira gotejando desperdiça mais de
+      40 litros por dia. Deixar a torneira aberta ao escovar os dentes joga fora até 12
+      litros por minuto. <strong>Pequenas atitudes se somam e formam um impacto enorme</strong>
+      — para o bem ou para o mal.
+    </p>
+  </div>
+
+  <div class="divider"><span class="divider-icon">🌊</span></div>
+
+  <div class="highlight">
+    <p>
+      <strong>"A crise da água não é uma crise de escassez — é uma crise de má gestão."</strong><br>
+      Organizações como a ONU alertam que a demanda global por água doce pode superar
+      a oferta em <strong>40%</strong> até 2030 se os padrões de consumo não mudarem.
+      O Brasil, apesar de ter 12% da água doce superficial do planeta, já enfrenta
+      secas históricas, racionamentos e colapsos em sistemas de abastecimento.
+    </p>
+  </div>
+
+  <ul class="fact-list">
+    <li>
+      <div class="ico">🌱</div>
+      <span>Reduzir o tempo de banho de 15 para 7 minutos economiza cerca de
+      <strong>65 litros por dia</strong> — mais de 23 mil litros por ano por pessoa.</span>
+    </li>
+    <li>
+      <div class="ico">🚰</div>
+      <span>Fechar a torneira enquanto escova os dentes por 2 minutos evita o
+      desperdício de até <strong>24 litros</strong> nessa única ação.</span>
+    </li>
+    <li>
+      <div class="ico">🚗</div>
+      <span>Lavar o carro com balde em vez de mangueira usa apenas <strong>40 litros</strong>
+      contra os 200 litros da mangueira aberta — uma economia de 80%.</span>
+    </li>
+    <li>
+      <div class="ico">🌍</div>
+      <span>Se cada brasileiro economizasse apenas <strong>10 litros por dia</strong>,
+      seriam mais de 2 bilhões de litros preservados diariamente no país.</span>
+    </li>
+  </ul>
+
+  <div class="body-text">
+    <p>
+      Consciência começa com conhecimento. Saber exatamente quanto você consome — e onde —
+      é o primeiro passo para mudar. A maioria das pessoas subestima seu próprio consumo
+      diário em até 40%, simplesmente por nunca ter parado para calcular.
+    </p>
+    <p>
+      O <strong>Gota a Gota</strong> foi criado para tornar esse processo simples, visual e
+      concreto. Em menos de um minuto, você descobre onde está gastando mais, quanto isso
+      representa em custo mensal e quais mudanças têm o maior impacto. Porque proteger a
+      água começa em casa, na torneira, no seu dia a dia.
+    </p>
+  </div>
+
+  <div class="divider"><span class="divider-icon">💧</span></div>
+
+  <!-- ODS badge -->
+  <div class="ods-badge">
+    <div class="ods-dot">ODS<br>11</div>
+    <span>Este projeto está alinhado ao <strong>Objetivo de Desenvolvimento Sustentável 11</strong>
+    da ONU — Cidades e Comunidades Sustentáveis, que inclui o acesso universal à água
+    limpa e saneamento.</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <p>Pronto para descobrir o seu consumo real?</p>
+    <a href="gota-a-gota.html" class="btn-cta">
+      Calcular meu consumo diário <span class="btn-arrow">→</span>
+    </a>
+  </div>
+
+</article>
+
+<footer>
+  <p>Gota a Gota · Projeto acadêmico · ODS 11 — Cidades e Comunidades Sustentáveis</p>
+</footer>
+
+</body>
+</html>
