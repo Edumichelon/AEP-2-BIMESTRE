@@ -1,2 +1,0 @@
-# AEP-2-BIMESTRE
-ATIVIDADE AEP - Marido de Aluguel
