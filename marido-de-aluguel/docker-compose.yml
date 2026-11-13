@@ -1,0 +1,26 @@
+# PostgreSQL local para o Marido de Aluguel.
+# Na primeira subida o container executa database/schema.sql e database/seed.sql (nessa ordem).
+# Para recriar o banco do zero: docker compose down -v && docker compose up -d
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: marido-aluguel-db
+    environment:
+      POSTGRES_DB: marido_aluguel
+      POSTGRES_USER: marido
+      POSTGRES_PASSWORD: marido123
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - dados-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marido -d marido_aluguel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  dados-postgres:
